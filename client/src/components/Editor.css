@@ -402,3 +402,45 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ========== Этап 4: панель с шаблонами и PDF ========== */
+.preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.preview-toolbar .template-switcher {
+  margin-bottom: 0;
+}
+
+.btn-download {
+  background: linear-gradient(90deg, #1e3c72, #2a9d8f);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btn-download:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-download:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Чтобы html2pdf не разрывал записи между страницами */
+.resume-item {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}

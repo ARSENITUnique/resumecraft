@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import html2pdf from 'html2pdf.js'
 import ResumePreview from './ResumePreview'
 import './Editor.css'
 
@@ -38,7 +39,7 @@ function Editor() {
     email: '',
     phone: '',
     about: '',
-    template: 'classic', // <-- выбранный шаблон
+    template: 'classic',
     education: [emptyEducation()],
     experience: [emptyExperience()],
     skills: [emptySkill()],
@@ -46,6 +47,10 @@ function Editor() {
   })
 
   const [touched, setTouched] = useState({ fullName: false, email: false })
+  const [downloading, setDownloading] = useState(false)
+
+  // Ref на блок предпросмотра — его клонируем в PDF
+  const previewRef = useRef(null)
 
   const updateField = (field, value) => {
     setResume((prev) => ({ ...prev, [field]: value }))
@@ -69,6 +74,79 @@ function Editor() {
       ...prev,
       [section]: prev[section].filter((item) => item.id !== id),
     }))
+  }
+
+  // ====== ЭКСПОРТ В PDF ======
+  const handleDownloadPDF = async () => {
+    // 1. Проверки
+    if (!resume.fullName.trim()) {
+      setTouched((t) => ({ ...t, fullName: true }))
+      alert('Перед скачиванием PDF заполните ФИО')
+      return
+    }
+    if (resume.email && !isValidEmail(resume.email)) {
+      setTouched((t) => ({ ...t, email: true }))
+      alert('Перед скачиванием PDF укажите корректный email')
+      return
+    }
+
+    const source = previewRef.current
+    if (!source) return
+
+    setDownloading(true)
+
+    // 2. Создаём контейнер A4 (794px ≈ 210мм при 96 dpi) вне экрана
+    const container = document.createElement('div')
+    container.style.position = 'fixed'
+    container.style.left = '-9999px'
+    container.style.top = '0'
+    container.style.width = '794px'
+    container.style.background = '#ffffff'
+
+    // 3. Клонируем предпросмотр
+    const clone = source.cloneNode(true)
+    clone.style.boxShadow = 'none'
+    clone.style.border = 'none'
+    clone.style.borderRadius = '0'
+    clone.style.minHeight = 'auto'
+    clone.style.width = '100%'
+    clone.style.overflow = 'visible'
+
+    container.appendChild(clone)
+    document.body.appendChild(container)
+
+    // 4. Имя файла: ФИО без пробелов или "resume"
+    const safeName = resume.fullName.trim().replace(/\s+/g, '_') || 'resume'
+
+    try {
+      await html2pdf()
+        .set({
+          margin: [10, 10, 10, 10], // мм
+          filename: `${safeName}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait',
+          },
+          // Уважаем page-break-inside: avoid из CSS
+          pagebreak: { mode: ['css', 'legacy'] },
+        })
+        .from(clone)
+        .save()
+    } catch (err) {
+      console.error('Ошибка создания PDF:', err)
+      alert('Не удалось создать PDF. Попробуйте ещё раз.')
+    } finally {
+      document.body.removeChild(container)
+      setDownloading(false)
+    }
   }
 
   const nameError = !resume.fullName.trim()
@@ -378,26 +456,40 @@ function Editor() {
         </section>
       </div>
 
-      {/* ===== ПРЕДПРОСМОТР + ПЕРЕКЛЮЧАТЕЛЬ ===== */}
+      {/* ===== ПРЕДПРОСМОТР + ПЕРЕКЛЮЧАТЕЛЬ + КНОПКА PDF ===== */}
       <div className="editor-preview">
-        <div className="template-switcher">
-          <span>Шаблон:</span>
+        <div className="preview-toolbar">
+          <div className="template-switcher">
+            <span>Шаблон:</span>
+            <button
+              type="button"
+              className={resume.template === 'classic' ? 'active' : ''}
+              onClick={() => updateField('template', 'classic')}
+            >
+              Classic
+            </button>
+            <button
+              type="button"
+              className={resume.template === 'modern' ? 'active' : ''}
+              onClick={() => updateField('template', 'modern')}
+            >
+              Modern
+            </button>
+          </div>
+
           <button
             type="button"
-            className={resume.template === 'classic' ? 'active' : ''}
-            onClick={() => updateField('template', 'classic')}
+            className="btn-download"
+            onClick={handleDownloadPDF}
+            disabled={downloading}
           >
-            Classic
-          </button>
-          <button
-            type="button"
-            className={resume.template === 'modern' ? 'active' : ''}
-            onClick={() => updateField('template', 'modern')}
-          >
-            Modern
+            {downloading ? 'Готовим PDF…' : 'Скачать PDF'}
           </button>
         </div>
-        <ResumePreview resume={resume} />
+
+        <div className="resume-preview" ref={previewRef}>
+          <ResumePreview resume={resume} />
+        </div>
       </div>
     </div>
   )
