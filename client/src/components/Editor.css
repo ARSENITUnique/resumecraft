@@ -1,4 +1,4 @@
-/* Двухколоночный макет: форма слева, предпросмотр справа */
+/* ========== Макет: форма + предпросмотр ========== */
 .editor-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -12,7 +12,7 @@
   }
 }
 
-/* --- Форма --- */
+/* ========== Форма ========== */
 .editor-form {
   background: #ffffff;
   border-radius: 16px;
@@ -96,7 +96,6 @@
   gap: 12px;
 }
 
-/* --- Списки (образование, опыт, проекты) --- */
 .list-item {
   background: #fafafa;
   border: 1px solid #f0f0f0;
@@ -115,7 +114,6 @@
   color: #6b7280;
 }
 
-/* --- Навыки (компактные строки) --- */
 .skill-row {
   display: flex;
   gap: 8px;
@@ -137,7 +135,6 @@
   box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
 }
 
-/* --- Кнопки --- */
 .btn-add {
   background: transparent;
   border: 1px dashed #2a9d8f;
@@ -169,53 +166,64 @@
   background: rgba(220, 38, 38, 0.08);
 }
 
-/* --- Предпросмотр --- */
+/* ========== Предпросмотр ========== */
 .editor-preview {
   position: sticky;
   top: 90px;
   align-self: start;
 }
 
+@media (max-width: 900px) {
+  .editor-preview {
+    position: static;
+  }
+}
+
+.template-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.template-switcher button {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  transition: all 0.2s;
+}
+
+.template-switcher button:hover {
+  border-color: #2a9d8f;
+}
+
+.template-switcher button.active {
+  background: linear-gradient(90deg, #1e3c72, #2a9d8f);
+  color: #ffffff;
+  border-color: transparent;
+}
+
 .resume-preview {
   background: #ffffff;
   border-radius: 16px;
-  padding: 32px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0f0f0;
+  overflow: hidden;
   min-height: 400px;
 }
 
-.resume-name {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin-bottom: 6px;
-  letter-spacing: -0.5px;
-}
-
-.resume-position {
-  font-size: 1.05rem;
-  color: #4b5563;
-  margin-bottom: 8px;
-}
-
-.resume-contacts {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 20px;
-}
-
-.resume-section {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.resume-section h2 {
-  font-size: 1.05rem;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
+/* Общие элементы внутри любого шаблона */
 .resume-item {
   margin-bottom: 12px;
 }
@@ -260,8 +268,137 @@
   font-weight: 500;
 }
 
-@media (max-width: 900px) {
-  .editor-preview {
-    position: static;
+/* ========== Шаблон CLASSIC ========== */
+.classic-template {
+  padding: 32px;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #1a1a1a;
+}
+
+.classic-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.classic-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.classic-position {
+  font-size: 1.05rem;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.classic-contacts {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.classic-section {
+  margin-top: 16px;
+}
+
+.classic-section-title {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+  color: #1a1a1a;
+}
+
+/* ========== Шаблон MODERN ========== */
+.modern-template {
+  display: grid;
+  grid-template-columns: 38% 62%;
+  min-height: 400px;
+}
+
+.modern-sidebar {
+  background: linear-gradient(180deg, #1e3c72 0%, #2a9d8f 100%);
+  color: #ffffff;
+  padding: 28px 20px;
+}
+
+.modern-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.modern-position {
+  font-size: 0.9rem;
+  opacity: 0.92;
+  margin-bottom: 18px;
+}
+
+.modern-sidebar-section {
+  margin-top: 18px;
+}
+
+.modern-sidebar-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.modern-sidebar p {
+  font-size: 0.88rem;
+  color: #ffffff;
+  opacity: 0.95;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.modern-skills {
+  list-style: none;
+  padding: 0;
+}
+
+.modern-skills li {
+  font-size: 0.88rem;
+  padding: 3px 0;
+  color: #ffffff;
+  opacity: 0.95;
+}
+
+.modern-main {
+  padding: 28px 24px;
+  background: #ffffff;
+}
+
+.modern-section {
+  margin-top: 18px;
+}
+
+.modern-section:first-child {
+  margin-top: 0;
+}
+
+.modern-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+  .modern-template {
+    grid-template-columns: 1fr;
   }
 }

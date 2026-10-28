@@ -2,7 +2,6 @@ import { useState } from 'react'
 import ResumePreview from './ResumePreview'
 import './Editor.css'
 
-// Фабрики пустых записей (у каждой свой id для ключей React)
 const emptyEducation = () => ({
   id: crypto.randomUUID(),
   institution: '',
@@ -30,34 +29,28 @@ const emptyProject = () => ({
   link: '',
 })
 
-// Проверка email простым регулярным выражением
 const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
 function Editor() {
-  // Всё состояние резюме хранится здесь — при изменении любого поля
-  // React автоматически перерисовывает форму И предпросмотр.
   const [resume, setResume] = useState({
     fullName: '',
     position: '',
     email: '',
     phone: '',
     about: '',
+    template: 'classic', // <-- выбранный шаблон
     education: [emptyEducation()],
     experience: [emptyExperience()],
     skills: [emptySkill()],
     projects: [emptyProject()],
   })
 
-  // Отслеживаем, какие поля пользователь уже "трогал",
-  // чтобы не показывать ошибки до первого ввода.
   const [touched, setTouched] = useState({ fullName: false, email: false })
 
-  // Обновить поле верхнего уровня (ФИО, email и т.д.)
   const updateField = (field, value) => {
     setResume((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Обновить поле внутри записи списка (образование, опыт, навык, проект)
   const updateItem = (section, id, field, value) => {
     setResume((prev) => ({
       ...prev,
@@ -67,12 +60,10 @@ function Editor() {
     }))
   }
 
-  // Добавить новую запись в раздел
   const addItem = (section, factory) => {
     setResume((prev) => ({ ...prev, [section]: [...prev[section], factory()] }))
   }
 
-  // Удалить запись по id
   const removeItem = (section, id) => {
     setResume((prev) => ({
       ...prev,
@@ -80,7 +71,6 @@ function Editor() {
     }))
   }
 
-  // Сообщения об ошибках
   const nameError = !resume.fullName.trim()
     ? 'ФИО обязательно для заполнения'
     : ''
@@ -98,7 +88,6 @@ function Editor() {
           Заполните поля — предпросмотр справа обновится автоматически.
         </p>
 
-        {/* --- Личная информация --- */}
         <section className="form-section">
           <h3 className="gradient-text">Личная информация</h3>
 
@@ -163,7 +152,6 @@ function Editor() {
           </label>
         </section>
 
-        {/* --- Образование --- */}
         <section className="form-section">
           <h3 className="gradient-text">Образование</h3>
           {resume.education.map((item, index) => (
@@ -180,7 +168,6 @@ function Editor() {
                   </button>
                 )}
               </div>
-
               <label className="field">
                 <span>Учебное заведение</span>
                 <input
@@ -192,7 +179,6 @@ function Editor() {
                   placeholder="МГУ им. М.В. Ломоносова"
                 />
               </label>
-
               <label className="field">
                 <span>Специальность</span>
                 <input
@@ -204,7 +190,6 @@ function Editor() {
                   placeholder="Прикладная информатика"
                 />
               </label>
-
               <div className="field-row">
                 <label className="field">
                   <span>Год начала</span>
@@ -240,7 +225,6 @@ function Editor() {
           </button>
         </section>
 
-        {/* --- Опыт работы --- */}
         <section className="form-section">
           <h3 className="gradient-text">Опыт работы</h3>
           {resume.experience.map((item, index) => (
@@ -257,7 +241,6 @@ function Editor() {
                   </button>
                 )}
               </div>
-
               <label className="field">
                 <span>Компания</span>
                 <input
@@ -269,7 +252,6 @@ function Editor() {
                   placeholder="ООО Ромашка"
                 />
               </label>
-
               <label className="field">
                 <span>Должность</span>
                 <input
@@ -281,7 +263,6 @@ function Editor() {
                   placeholder="Frontend-разработчик"
                 />
               </label>
-
               <label className="field">
                 <span>Описание обязанностей</span>
                 <textarea
@@ -304,7 +285,6 @@ function Editor() {
           </button>
         </section>
 
-        {/* --- Навыки --- */}
         <section className="form-section">
           <h3 className="gradient-text">Навыки</h3>
           {resume.skills.map((item, index) => (
@@ -337,7 +317,6 @@ function Editor() {
           </button>
         </section>
 
-        {/* --- Проекты --- */}
         <section className="form-section">
           <h3 className="gradient-text">Проекты</h3>
           {resume.projects.map((item, index) => (
@@ -354,7 +333,6 @@ function Editor() {
                   </button>
                 )}
               </div>
-
               <label className="field">
                 <span>Название проекта</span>
                 <input
@@ -366,7 +344,6 @@ function Editor() {
                   placeholder="ResumeCraft"
                 />
               </label>
-
               <label className="field">
                 <span>Описание</span>
                 <textarea
@@ -378,7 +355,6 @@ function Editor() {
                   placeholder="Сервис создания резюме с экспортом в PDF"
                 />
               </label>
-
               <label className="field">
                 <span>Ссылка</span>
                 <input
@@ -402,8 +378,25 @@ function Editor() {
         </section>
       </div>
 
-      {/* ===== ПРЕДПРОСМОТР ===== */}
+      {/* ===== ПРЕДПРОСМОТР + ПЕРЕКЛЮЧАТЕЛЬ ===== */}
       <div className="editor-preview">
+        <div className="template-switcher">
+          <span>Шаблон:</span>
+          <button
+            type="button"
+            className={resume.template === 'classic' ? 'active' : ''}
+            onClick={() => updateField('template', 'classic')}
+          >
+            Classic
+          </button>
+          <button
+            type="button"
+            className={resume.template === 'modern' ? 'active' : ''}
+            onClick={() => updateField('template', 'modern')}
+          >
+            Modern
+          </button>
+        </div>
         <ResumePreview resume={resume} />
       </div>
     </div>
