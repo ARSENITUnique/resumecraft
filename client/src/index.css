@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Градиентный текст: синий → зелёный */
+.gradient-text {
+  background: linear-gradient(90deg, #1e3c72 0%, #2a9d8f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+button {
+  font-family: inherit;
+}
