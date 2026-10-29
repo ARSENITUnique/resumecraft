@@ -1,4 +1,22 @@
+import { useState } from 'react'
+
 function Home({ onStart }) {
+  const [health, setHealth] = useState(null)
+  const [checking, setChecking] = useState(false)
+
+  const checkHealth = async () => {
+    setChecking(true)
+    try {
+      const res = await fetch('/api/health')
+      const data = await res.json()
+      setHealth(data)
+    } catch (err) {
+      setHealth({ status: 'error', message: 'Сервер недоступен' })
+    } finally {
+      setChecking(false)
+    }
+  }
+
   return (
     <section className="hero">
       <h2 className="gradient-text">
@@ -32,6 +50,20 @@ function Home({ onStart }) {
           <h3 className="gradient-text">Экспорт в PDF</h3>
           <p>Скачивайте готовое резюме в PDF с сохранением оформления.</p>
         </div>
+      </div>
+
+      {/* Проверка связи с backend (этап 5) */}
+      <div className="health-check">
+        <button className="btn-secondary" onClick={checkHealth} disabled={checking}>
+          {checking ? 'Проверяем…' : 'Проверить сервер'}
+        </button>
+        {health && (
+          <p className={`health-result ${health.status === 'ok' ? 'ok' : 'err'}`}>
+            {health.status === 'ok'
+              ? `✅ Сервер работает (${health.service})`
+              : `❌ Ошибка: ${health.message || health.error || 'неизвестно'}`}
+          </p>
+        )}
       </div>
     </section>
   )

@@ -177,3 +177,50 @@
     align-items: flex-start;
   }
 }
+/* ========== Этап 5: проверка связи с сервером ========== */
+.health-check {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #1a1a1a;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: #2a9d8f;
+  color: #1e3c72;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.health-result {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.health-result.ok {
+  color: #2a9d8f;
+  font-weight: 600;
+}
+
+.health-result.err {
+  color: #dc2626;
+  font-weight: 600;
+}
